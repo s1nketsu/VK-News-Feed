@@ -48,6 +48,11 @@ class NewsFeedCell: UITableViewCell {
     @IBOutlet weak var viewsLabel: UILabel!
     @IBOutlet weak var bottomView: UIView!
     
+    override func prepareForReuse() {
+        iconImage.set(imageURL: nil)
+        postImageView.set(imageURL: nil)
+    }
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         iconImage?.layer.cornerRadius = iconImage.frame.width / 2
@@ -69,9 +74,9 @@ class NewsFeedCell: UITableViewCell {
         sharesLabel.text = viewModel.shares
         viewsLabel.text = viewModel.views
         
-//        postLabel.frame = viewModel.sizes.postLabelFrame
-//        postImageView.frame = viewModel.sizes.attachmentFrame
-//        bottomView.frame = viewModel.sizes.bottomView
+        postLabel.frame = viewModel.sizes.postLabelFrame
+        postImageView.frame = viewModel.sizes.attachmentFrame
+        bottomView.frame = viewModel.sizes.bottomView
         
         if let photoAttachment = viewModel.photoAttachment {
             postImageView.set(imageURL: photoAttachment.photoURL)

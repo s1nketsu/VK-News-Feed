@@ -29,15 +29,6 @@ struct NetworkDataFetcher: DataFetcher {
                 responce(nil)
             }
             guard let data = data else { return }
-            
-            do {
-                let decoder = JSONDecoder()
-                decoder.keyDecodingStrategy = .convertFromSnakeCase
-                let decoded = try decoder.decode(Welcome.self, from: data)
-                responce(decoded.response)
-            } catch let error {
-                print(error.localizedDescription)
-            }
             let decoded = self.decodeJSON(type: Welcome.self, from: data)
             responce(decoded?.response)
         }
