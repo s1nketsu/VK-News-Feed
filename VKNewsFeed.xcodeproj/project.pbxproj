@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A35140582979808000FDDB2C /* NewsFeedCodeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A35140572979808000FDDB2C /* NewsFeedCodeCell.swift */; };
+		A351405A297AECFD00FDDB2C /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3514059297AECFD00FDDB2C /* Constants.swift */; };
 		A3AB31BE297729CB00DA7761 /* NewsFeedPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3AB31B8297729CB00DA7761 /* NewsFeedPresenter.swift */; };
 		A3AB31BF297729CB00DA7761 /* NewsFeedWorker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3AB31B9297729CB00DA7761 /* NewsFeedWorker.swift */; };
 		A3AB31C0297729CB00DA7761 /* NewsFeedRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3AB31BA297729CB00DA7761 /* NewsFeedRouter.swift */; };
@@ -49,6 +51,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		A35140572979808000FDDB2C /* NewsFeedCodeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsFeedCodeCell.swift; sourceTree = "<group>"; };
+		A3514059297AECFD00FDDB2C /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		A3AB31B8297729CB00DA7761 /* NewsFeedPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsFeedPresenter.swift; sourceTree = "<group>"; };
 		A3AB31B9297729CB00DA7761 /* NewsFeedWorker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsFeedWorker.swift; sourceTree = "<group>"; };
 		A3AB31BA297729CB00DA7761 /* NewsFeedRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsFeedRouter.swift; sourceTree = "<group>"; };
@@ -107,9 +111,11 @@
 		A3AB31C629774C3300DA7761 /* Cells */ = {
 			isa = PBXGroup;
 			children = (
+				A3514059297AECFD00FDDB2C /* Constants.swift */,
 				A3AB31C729774C3C00DA7761 /* NewsFeedCell.swift */,
 				A3AB31C929774C6C00DA7761 /* NewsFeedCell.xib */,
 				A3AB31CE29786B2600DA7761 /* NewsFeedCellLayoutCalculator.swift */,
+				A35140572979808000FDDB2C /* NewsFeedCodeCell.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -269,6 +275,7 @@
 			files = (
 				A3C922F42977117100E2BC45 /* FeedResponce.swift in Sources */,
 				A3AB31D129789E1200DA7761 /* String + Height.swift in Sources */,
+				A35140582979808000FDDB2C /* NewsFeedCodeCell.swift in Sources */,
 				A3AB31BE297729CB00DA7761 /* NewsFeedPresenter.swift in Sources */,
 				A3C922CF2975C51A00E2BC45 /* AuthViewController.swift in Sources */,
 				A3C922CB2975C51A00E2BC45 /* AppDelegate.swift in Sources */,
@@ -281,6 +288,7 @@
 				A3AB31C0297729CB00DA7761 /* NewsFeedRouter.swift in Sources */,
 				A3C922E42975C68800E2BC45 /* AuthService.swift in Sources */,
 				A3C922F12975E9F300E2BC45 /* API.swift in Sources */,
+				A351405A297AECFD00FDDB2C /* Constants.swift in Sources */,
 				A3AB31C1297729CB00DA7761 /* NewsFeedModels.swift in Sources */,
 				A3AB31C829774C3C00DA7761 /* NewsFeedCell.swift in Sources */,
 				A3AB31C2297729CB00DA7761 /* NewsFeedViewController.swift in Sources */,
