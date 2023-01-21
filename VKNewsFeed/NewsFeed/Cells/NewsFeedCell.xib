@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -150,7 +149,7 @@
                 <outlet property="cardView" destination="b6j-Hs-F2q" id="3Uh-yw-xCP"/>
                 <outlet property="commentsLabel" destination="ZAx-cM-gLI" id="Was-0V-wwx"/>
                 <outlet property="dateLabel" destination="YQL-Uj-31F" id="EVy-in-bz9"/>
-                <outlet property="iconImage" destination="7z2-qw-Vog" id="3VC-vK-1nr"/>
+                <outlet property="iconImageView" destination="7z2-qw-Vog" id="3VC-vK-1nr"/>
                 <outlet property="likesLabel" destination="EXz-5j-nLb" id="oMl-9W-U6P"/>
                 <outlet property="nameLabel" destination="Nmm-ct-7hS" id="e20-gb-rKO"/>
                 <outlet property="postImageView" destination="lam-pT-pia" id="w9a-2D-yjV"/>

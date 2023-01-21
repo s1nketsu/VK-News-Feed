@@ -11,7 +11,7 @@ protocol NewsFeedDisplayLogic: AnyObject {
     func displaySomething(viewModel: NewsFeed.Something.ViewModel.ViewModelData)
 }
 
-class NewsFeedViewController: UIViewController, NewsFeedDisplayLogic {
+class NewsFeedViewController: UIViewController, NewsFeedDisplayLogic, NewsFeedCodeCellDelegate {
     
     var interactor: NewsFeedBusinessLogic?
     var router: (NSObjectProtocol & NewsFeedRoutingLogic & NewsFeedDataPassing)?
@@ -67,14 +67,26 @@ class NewsFeedViewController: UIViewController, NewsFeedDisplayLogic {
             tableView.reloadData()
         }
     }
+    
+    // MARK: - NewsFeedCodeCellDelegate
+    
+    func revealPost(for cell: NewsFeedCodeCell) {
+        print("121312")
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        let cellViewModel = feedViewModel.cells[indexPath.row]
+        interactor?.makeRequest(request: .revealPostIds(postId: cellViewModel.postId))
+    }
 }
 
 extension NewsFeedViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        // Запуск через .xib
 //        let cell = tableView.dequeueReusableCell(withIdentifier: NewsFeedCell.reuseID, for: indexPath) as! NewsFeedCell
+        // Запуск через код
         let cell = tableView.dequeueReusableCell(withIdentifier: NewsFeedCodeCell.reuseID, for: indexPath) as! NewsFeedCodeCell
         let cellViewModel = feedViewModel.cells[indexPath.row]
+        cell.delegate = self
         cell.set(viewModel: cellViewModel)
         return cell
     }
@@ -86,6 +98,10 @@ extension NewsFeedViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let cellViewModel = feedViewModel.cells[indexPath.row]
         return cellViewModel.sizes.totalHeight
-//        return 212
+    }
+    
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        let cellViewModel = feedViewModel.cells[indexPath.row]
+        return cellViewModel.sizes.totalHeight
     }
 }

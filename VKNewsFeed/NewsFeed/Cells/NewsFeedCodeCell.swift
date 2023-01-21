@@ -7,9 +7,15 @@
 
 import UIKit
 
+protocol NewsFeedCodeCellDelegate: AnyObject {
+    func revealPost(for cell: NewsFeedCodeCell)
+}
+
 final class NewsFeedCodeCell: UITableViewCell {
     
     static let reuseID = "NewsFeedCodeCell"
+    
+    weak var delegate: NewsFeedCodeCellDelegate?
     
     //Первый слой
     let cardView: UIView = {
@@ -32,6 +38,17 @@ final class NewsFeedCodeCell: UITableViewCell {
         label.font = Constants.postLabelFont
         label.textColor = #colorLiteral(red: 0.1725490196, green: 0.1764705882, blue: 0.1803921569, alpha: 1)
         return label
+    }()
+    
+    let showMoreTextButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Показать полностью...", for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 15, weight: .medium)
+        
+        button.setTitleColor(#colorLiteral(red: 0.4691888094, green: 0.6887934804, blue: 0.8642576933, alpha: 1), for: .normal)
+        button.contentHorizontalAlignment = .left
+        button.contentVerticalAlignment = .center
+        return button
     }()
     
     let postImageView: WebImageView = {
@@ -165,6 +182,11 @@ final class NewsFeedCodeCell: UITableViewCell {
         return label
     }()
     
+    override func prepareForReuse() {
+        iconImageView.set(imageURL: nil)
+        postImageView.set(imageURL: nil)
+    }
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -180,6 +202,11 @@ final class NewsFeedCodeCell: UITableViewCell {
         overlayThirdLayerTopView() // Третий слой topView
         overlayThirdLayerBottomView() // Третий слой bottomView
         overlayFourthLayerBottomView() // Четвертый слой bottomView
+        showMoreTextButton.addTarget(self, action: #selector(showMoreTextButtonTapped), for: .touchUpInside)
+    }
+    
+    @objc func showMoreTextButtonTapped() {
+        delegate?.revealPost(for: self)
     }
     
     func set(viewModel: FeedCellViewModel) {
@@ -194,7 +221,8 @@ final class NewsFeedCodeCell: UITableViewCell {
         
         postLabel.frame = viewModel.sizes.postLabelFrame
         postImageView.frame = viewModel.sizes.attachmentFrame
-        bottomView.frame = viewModel.sizes.bottomView
+        bottomView.frame = viewModel.sizes.bottomViewFrame
+        showMoreTextButton.frame = viewModel.sizes.showMoreTextButtonFrame
         
         if let photoAttachment = viewModel.photoAttachment {
             postImageView.set(imageURL: photoAttachment.photoURL)
@@ -216,6 +244,7 @@ final class NewsFeedCodeCell: UITableViewCell {
     private func overlaySecondLayer() {
         cardView.addSubview(topView)
         cardView.addSubview(postLabel)
+        contentView.addSubview(showMoreTextButton)
         cardView.addSubview(postImageView)
         cardView.addSubview(bottomView)
         NSLayoutConstraint.activate([

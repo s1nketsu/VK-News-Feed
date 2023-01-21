@@ -16,4 +16,8 @@ struct Constants {
     static let bottomViewHeight: CGFloat = 44
     static let bottomViewWidth: CGFloat = 80
     static let bottomViewImageSize: CGFloat = 20
+    static let minifiedPostLimitLines: CGFloat = 8
+    static let minifiedPostLines: CGFloat = 6
+    static let showMoreTextButtonInsets = UIEdgeInsets(top: 0, left: 14, bottom: 0, right: 14)
+    static let showMoreTextButtonSize = CGSize(width: 170, height: 30)
 }

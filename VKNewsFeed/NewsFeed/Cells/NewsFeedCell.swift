@@ -22,8 +22,9 @@ protocol FeedCellViewModel {
 
 protocol FeedCellSizes {
     var postLabelFrame: CGRect { get }
+    var showMoreTextButtonFrame: CGRect { get }
     var attachmentFrame: CGRect { get }
-    var bottomView: CGRect { get }
+    var bottomViewFrame: CGRect { get }
     var totalHeight: CGFloat { get }
 }
 
@@ -37,7 +38,7 @@ class NewsFeedCell: UITableViewCell {
     
     static let reuseID = "NewsFeedCell"
     @IBOutlet weak var cardView: UIView!
-    @IBOutlet weak var iconImage: WebImageView!
+    @IBOutlet weak var iconImageView: WebImageView!
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var postLabel: UILabel!
@@ -49,14 +50,14 @@ class NewsFeedCell: UITableViewCell {
     @IBOutlet weak var bottomView: UIView!
     
     override func prepareForReuse() {
-        iconImage.set(imageURL: nil)
+        iconImageView.set(imageURL: nil)
         postImageView.set(imageURL: nil)
     }
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        iconImage?.layer.cornerRadius = iconImage.frame.width / 2
-        iconImage?.clipsToBounds = true
+        iconImageView?.layer.cornerRadius = iconImageView.frame.width / 2
+        iconImageView?.clipsToBounds = true
         
         cardView?.layer.cornerRadius = 10
         cardView?.clipsToBounds = true
@@ -65,7 +66,7 @@ class NewsFeedCell: UITableViewCell {
     }
     
     func set(viewModel: FeedCellViewModel) {
-        iconImage.set(imageURL: viewModel.iconUrlString)
+        iconImageView.set(imageURL: viewModel.iconUrlString)
         nameLabel.text = viewModel.name
         dateLabel.text = viewModel.date
         postLabel.text = viewModel.text
@@ -76,7 +77,7 @@ class NewsFeedCell: UITableViewCell {
         
         postLabel.frame = viewModel.sizes.postLabelFrame
         postImageView.frame = viewModel.sizes.attachmentFrame
-        bottomView.frame = viewModel.sizes.bottomView
+        bottomView.frame = viewModel.sizes.bottomViewFrame
         
         if let photoAttachment = viewModel.photoAttachment {
             postImageView.set(imageURL: photoAttachment.photoURL)
