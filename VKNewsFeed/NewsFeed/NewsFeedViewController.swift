@@ -56,6 +56,7 @@ class NewsFeedViewController: UIViewController, NewsFeedDisplayLogic, NewsFeedCo
         interactor?.makeRequest(request: NewsFeed.Something.Request.RequestType.getNewsFeed)
         tableView.separatorStyle = .none
         tableView.backgroundColor = .clear
+        tableView.isUserInteractionEnabled = true
         view.backgroundColor = .blue
     }
     

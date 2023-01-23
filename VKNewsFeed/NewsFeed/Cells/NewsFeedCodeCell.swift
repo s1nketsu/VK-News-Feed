@@ -21,6 +21,7 @@ final class NewsFeedCodeCell: UITableViewCell {
     let cardView: UIView = {
         let view = UIView()
         view.backgroundColor = .white
+        view.isUserInteractionEnabled = true
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -50,6 +51,8 @@ final class NewsFeedCodeCell: UITableViewCell {
         button.contentVerticalAlignment = .center
         return button
     }()
+    
+    let galleryCollectionView = GalleryCollectionView()
     
     let postImageView: WebImageView = {
         let imageView = WebImageView()
@@ -205,6 +208,10 @@ final class NewsFeedCodeCell: UITableViewCell {
         showMoreTextButton.addTarget(self, action: #selector(showMoreTextButtonTapped), for: .touchUpInside)
     }
     
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     @objc func showMoreTextButtonTapped() {
         delegate?.revealPost(for: self)
     }
@@ -220,20 +227,35 @@ final class NewsFeedCodeCell: UITableViewCell {
         viewsLabel.text = viewModel.views
         
         postLabel.frame = viewModel.sizes.postLabelFrame
-        postImageView.frame = viewModel.sizes.attachmentFrame
+        
         bottomView.frame = viewModel.sizes.bottomViewFrame
         showMoreTextButton.frame = viewModel.sizes.showMoreTextButtonFrame
         
-        if let photoAttachment = viewModel.photoAttachment {
+        //        if let photoAttachment = viewModel.photoAttachment {
+        //            postImageView.set(imageURL: photoAttachment.photoURL)
+        //            postImageView.isHidden = false
+        //        } else {
+        //            postImageView.isHidden = true
+        //        }
+        
+        if let photoAttachment = viewModel.photoAttachments.first, viewModel.photoAttachments.count == 1 {
             postImageView.set(imageURL: photoAttachment.photoURL)
             postImageView.isHidden = false
+            galleryCollectionView.isHidden = true
+            postImageView.frame = viewModel.sizes.attachmentFrame
+        } else if viewModel.photoAttachments.count > 1 {
+            postImageView.isHidden = true
+            galleryCollectionView.isHidden = false
+            galleryCollectionView.set(photos: viewModel.photoAttachments)
+            galleryCollectionView.frame = viewModel.sizes.attachmentFrame
         } else {
             postImageView.isHidden = true
+            galleryCollectionView.isHidden = true
         }
     }
     
     private func overlayFirstLayer() {
-        addSubview(cardView)
+        self.contentView.addSubview(cardView)
         NSLayoutConstraint.activate([
             cardView.topAnchor.constraint(equalTo: topAnchor),
             cardView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 7),
@@ -244,11 +266,13 @@ final class NewsFeedCodeCell: UITableViewCell {
     private func overlaySecondLayer() {
         cardView.addSubview(topView)
         cardView.addSubview(postLabel)
-        contentView.addSubview(showMoreTextButton)
+        cardView.addSubview(showMoreTextButton)
         cardView.addSubview(postImageView)
+        cardView.addSubview(galleryCollectionView)
         cardView.addSubview(bottomView)
         NSLayoutConstraint.activate([
             
+            //topView contraints
             topView.topAnchor.constraint(equalTo: cardView.topAnchor, constant: 8),
             topView.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 8),
             topView.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -8),
@@ -261,6 +285,7 @@ final class NewsFeedCodeCell: UITableViewCell {
         topView.addSubview(nameLabel)
         topView.addSubview(dateLabel)
         NSLayoutConstraint.activate([
+            
             //iconImageView contraints
             iconImageView.topAnchor.constraint(equalTo: topView.topAnchor),
             iconImageView.leadingAnchor.constraint(equalTo: topView.leadingAnchor),
@@ -286,21 +311,26 @@ final class NewsFeedCodeCell: UITableViewCell {
         bottomView.addSubview(sharesView)
         bottomView.addSubview(viewsView)
         NSLayoutConstraint.activate([
+            
+            //likesView contraints
             likesView.topAnchor.constraint(equalTo: bottomView.topAnchor),
             likesView.leadingAnchor.constraint(equalTo: bottomView.leadingAnchor),
             likesView.heightAnchor.constraint(equalToConstant: Constants.bottomViewHeight),
             likesView.widthAnchor.constraint(equalToConstant: Constants.bottomViewWidth),
             
+            //commentsView contraints
             commentsView.topAnchor.constraint(equalTo: bottomView.topAnchor),
             commentsView.leadingAnchor.constraint(equalTo: likesView.trailingAnchor),
             commentsView.heightAnchor.constraint(equalToConstant: Constants.bottomViewHeight),
             commentsView.widthAnchor.constraint(equalToConstant: Constants.bottomViewWidth),
             
+            //sharesView contraints
             sharesView.topAnchor.constraint(equalTo: bottomView.topAnchor),
             sharesView.leadingAnchor.constraint(equalTo: commentsView.trailingAnchor),
             sharesView.heightAnchor.constraint(equalToConstant: Constants.bottomViewHeight),
             sharesView.widthAnchor.constraint(equalToConstant: Constants.bottomViewWidth),
             
+            //viewsView contraints
             viewsView.topAnchor.constraint(equalTo: bottomView.topAnchor),
             viewsView.trailingAnchor.constraint(equalTo: bottomView.trailingAnchor),
             viewsView.heightAnchor.constraint(equalToConstant: Constants.bottomViewHeight),
@@ -337,9 +367,5 @@ final class NewsFeedCodeCell: UITableViewCell {
             label.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
         
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 }
