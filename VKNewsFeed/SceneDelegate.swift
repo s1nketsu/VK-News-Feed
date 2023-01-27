@@ -26,6 +26,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, AuthServiceDelegate {
         authService.delegate = self
         let authVc = UIStoryboard(name: "AuthViewController", bundle: nil).instantiateInitialViewController() as? AuthViewController
         window?.rootViewController = authVc
+        window?.overrideUserInterfaceStyle = .light
         window?.makeKeyAndVisible()
     }
     
