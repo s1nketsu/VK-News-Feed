@@ -15,6 +15,7 @@ struct FeedResponce: Codable {
     var items: [FeedItem]
     var profiles: [Profile]
     var groups: [Group]
+    var nextFrom: String?
 }
 
 struct FeedItem: Codable {

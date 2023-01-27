@@ -13,6 +13,8 @@ protocol NewsFeedPresentationLogic {
 
 class NewsFeedPresenter: NewsFeedPresentationLogic {
     
+    // MARK: - Parameters
+    
     weak var viewController: NewsFeedDisplayLogic?
     
     var cellLayoutCalculator: NewsFeedCellLayoutCalculatorProtocol = NewsFeedCellLayoutCalculator()
@@ -24,20 +26,25 @@ class NewsFeedPresenter: NewsFeedPresentationLogic {
         return dateFormatter
     }()
     
-    // MARK: Do something
+    // MARK: Methods
     
     func presentSomething(response: NewsFeed.Something.Response.ResponceType) {
         
         switch response {
         case .presentNewsFeed(let feed, let revealedPostIds):
-            
-            print(revealedPostIds)
             let cells = feed.items.map { feedItem in
                 cellViewModel(from: feedItem, profiles: feed.profiles, groups: feed.groups, revealedPostIds: revealedPostIds)
             }
-            
-            let feedViewModel = FeedViewModel.init(cells: cells)
+            let footerTitle = String.localizedStringWithFormat(NSLocalizedString("Newsfeed Cells Count", comment: ""), cells.count)
+            let feedViewModel = FeedViewModel.init(cells: cells, footerTitle: footerTitle)
             viewController?.displaySomething(viewModel: .displayNewsFeed(feedViewModel: feedViewModel))
+            
+        case .presentUserInfo(user: let user):
+            let userViewModel = UserViewModel.init(photoUrlString: user?.photo100)
+            viewController?.displaySomething(viewModel: .displayUserInfo(userViewModel: userViewModel))
+            
+        case .presentFooterLoader:
+            viewController?.displaySomething(viewModel: .displayFooterLoader)
         }
     }
     
@@ -49,28 +56,39 @@ class NewsFeedPresenter: NewsFeedPresentationLogic {
         let isFullSized = revealedPostIds.contains { postId -> Bool in
             return postId == feedItem.postId
         }
-        
         let sizes = cellLayoutCalculator.sizes(postText: feedItem.text, photoAttachments: photoAttachments, isFullSizedPost: isFullSized)
+        let postText = feedItem.text?.replacingOccurrences(of: "<br>", with: "\n")
         return FeedViewModel.Cell.init(postId: feedItem.postId,
                                        iconUrlString: profile.photo,
                                        name: profile.name,
                                        date: dateTitle,
-                                       text: feedItem.text,
-                                       likes: String(feedItem.likes?.count ?? 0),
-                                       comments: String(feedItem.comments?.count ?? 0),
-                                       shares: String(feedItem.reposts?.count ?? 0),
-                                       views: String(feedItem.views?.count ?? 0),
+                                       text: postText,
+                                       likes: formatterCounter(feedItem.likes?.count),
+                                       comments: formatterCounter(feedItem.comments?.count),
+                                       shares: formatterCounter(feedItem.reposts?.count),
+                                       views: formatterCounter(feedItem.views?.count),
                                        photoAttachments: photoAttachments,
                                        sizes: sizes)
     }
     
-    private func profile(for sourceId: Int, profiles: [Profile], groups: [Group]) -> ProfileRepresentable {
-        let profilesOrGroups: [ProfileRepresentable] = sourceId >= 0 ? profiles : groups
-        let normalSourceId = sourceId >= 0 ? sourceId : -sourceId
-        let profilePrepresentable = profilesOrGroups.first { myProfileRepresentable in
-            myProfileRepresentable.id == normalSourceId
+    private func formatterCounter(_ counter: Int?) -> String? {
+        guard let counter = counter, counter > 0 else { return nil }
+        var counterString = String(counter)
+        if 4...6 ~= counterString.count {
+            counterString = String(counterString.dropLast(3)) + "К"
+        } else if counterString.count > 6 {
+            counterString = String(counterString.dropLast(6)) + "М"
         }
-        return profilePrepresentable!
+        return counterString
+    }
+    
+    private func profile(for sourseId: Int, profiles: [Profile], groups: [Group]) -> ProfileRepresentable {
+        let profilesOrGroups: [ProfileRepresentable] = sourseId >= 0 ? profiles : groups
+        let normalSourseId = sourseId >= 0 ? sourseId : -sourseId
+        let profileRepresentable = profilesOrGroups.first { (myProfileRepresentable) -> Bool in
+            myProfileRepresentable.id == normalSourseId
+        }
+        return profileRepresentable!
     }
     
     private func photoAttachment(feedItem: FeedItem) -> FeedViewModel.FeedCellPhotoAttachment? {

@@ -9,7 +9,8 @@ import Foundation
 import VKSdkFramework
 
 protocol DataFetcher {
-    func getFeed(responce: @escaping (FeedResponce?) -> Void)
+    func getFeed(nextBatchFrom: String?, responce: @escaping (FeedResponce?) -> Void)
+    func getUser(responce: @escaping (UserResponce?) -> Void)
 }
 
 struct NetworkDataFetcher: DataFetcher {
@@ -20,9 +21,24 @@ struct NetworkDataFetcher: DataFetcher {
         self.networking = networking
     }
     
-    func getFeed(responce: @escaping (FeedResponce?) -> Void) {
+    func getUser(responce: @escaping (UserResponce?) -> Void) {
         guard let token = VKSdk.accessToken().accessToken else { return }
-        let allParams = ["filters":"post,photo", "access_token":token, "v": API.version]
+        guard let userID = VKSdk.accessToken().userId else { return }
+        let allParams = ["fields":"photo_100","user_ids": userID,"access_token": token,"v": API.version]
+        networking.request(path: API.user, parameters: allParams) { data, error in
+            if let error = error {
+                print("Error: \(error.localizedDescription)")
+                responce(nil)
+            } 
+            let decoded = self.decodeJSON(type: WelcomeUser.self, from: data)
+            responce(decoded?.response.first)
+        }
+    }
+    
+    func getFeed(nextBatchFrom: String?, responce: @escaping (FeedResponce?) -> Void) {
+        guard let token = VKSdk.accessToken().accessToken else { return }
+        var allParams = ["filters":"post,photo", "access_token":token, "v":API.version]
+        allParams["start_from"] = nextBatchFrom
         networking.request(path: API.newsFeed, parameters: allParams) { data, error in
             if let error = error {
                 print("Error: \(error.localizedDescription)")

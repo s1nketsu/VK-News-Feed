@@ -7,6 +7,33 @@
 
 import UIKit
 
+protocol FeedCellViewModel {
+    var iconUrlString: String { get set }
+    var name: String { get }
+    var date: String { get }
+    var text: String? { get }
+    var likes: String? { get }
+    var comments: String? { get }
+    var shares: String? { get }
+    var views: String? { get }
+    var photoAttachments: [FeedCellPhotoAttachmentViewModel] { get }
+    var sizes: FeedCellSizes { get }
+}
+
+protocol FeedCellSizes {
+    var postLabelFrame: CGRect { get }
+    var showMoreTextButtonFrame: CGRect { get }
+    var attachmentFrame: CGRect { get }
+    var bottomViewFrame: CGRect { get }
+    var totalHeight: CGFloat { get }
+}
+
+protocol FeedCellPhotoAttachmentViewModel {
+    var photoURL: String? { get }
+    var width: Int { get }
+    var height: Int { get }
+}
+
 protocol NewsFeedCodeCellDelegate: AnyObject {
     func revealPost(for cell: NewsFeedCodeCell)
 }
@@ -33,12 +60,27 @@ final class NewsFeedCodeCell: UITableViewCell {
         return view
     }()
     
-    let postLabel: UILabel = {
-        let label = UILabel()
-        label.numberOfLines = 0
-        label.font = Constants.postLabelFont
-        label.textColor = #colorLiteral(red: 0.1725490196, green: 0.1764705882, blue: 0.1803921569, alpha: 1)
-        return label
+//    let postLabel: UILabel = {
+//        let label = UILabel()
+//        label.numberOfLines = 0
+//        label.font = Constants.postLabelFont
+//        label.textColor = #colorLiteral(red: 0.1725490196, green: 0.1764705882, blue: 0.1803921569, alpha: 1)
+//        return label
+//    }()
+    
+    let postLabel: UITextView = {
+        let textView = UITextView()
+        textView.font = Constants.postLabelFont
+        textView.isScrollEnabled = false
+        textView.isSelectable = true
+        textView.isUserInteractionEnabled = true
+        textView.isEditable = false
+        textView.dataDetectorTypes = .all
+        textView.backgroundColor = .white
+        textView.textColor = .black
+        let padding = textView.textContainer.lineFragmentPadding
+        textView.textContainerInset = UIEdgeInsets(top: 0, left: -padding, bottom: 0, right: -padding)
+        return textView
     }()
     
     let showMoreTextButton: UIButton = {
@@ -231,13 +273,6 @@ final class NewsFeedCodeCell: UITableViewCell {
         bottomView.frame = viewModel.sizes.bottomViewFrame
         showMoreTextButton.frame = viewModel.sizes.showMoreTextButtonFrame
         
-        //        if let photoAttachment = viewModel.photoAttachment {
-        //            postImageView.set(imageURL: photoAttachment.photoURL)
-        //            postImageView.isHidden = false
-        //        } else {
-        //            postImageView.isHidden = true
-        //        }
-        
         if let photoAttachment = viewModel.photoAttachments.first, viewModel.photoAttachments.count == 1 {
             postImageView.set(imageURL: photoAttachment.photoURL)
             postImageView.isHidden = false
@@ -358,12 +393,12 @@ final class NewsFeedCodeCell: UITableViewCell {
         
         NSLayoutConstraint.activate([
             imageView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            imageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
+            imageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 15),
             imageView.widthAnchor.constraint(equalToConstant: Constants.bottomViewImageSize),
             imageView.heightAnchor.constraint(equalToConstant: Constants.bottomViewImageSize),
             
             label.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            label.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 4),
+            label.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 6),
             label.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
         

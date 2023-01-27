@@ -40,6 +40,8 @@ class GalleryCollectionView: UICollectionView, UICollectionViewDelegate, UIColle
         reloadData()
     }
     
+    // MARK: - UICollectionViewDelegate, UICollectionViewDataSource
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         photos.count
     }
@@ -54,6 +56,8 @@ class GalleryCollectionView: UICollectionView, UICollectionViewDelegate, UIColle
         CGSize(width: frame.width, height: frame.height)
     }
 }
+
+// MARK: - RowLayoutDelegate
 
 extension GalleryCollectionView: RowLayoutDelegate {
     

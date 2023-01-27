@@ -13,12 +13,21 @@ protocol NewsFeedDisplayLogic: AnyObject {
 
 class NewsFeedViewController: UIViewController, NewsFeedDisplayLogic, NewsFeedCodeCellDelegate {
     
-    var interactor: NewsFeedBusinessLogic?
-    var router: (NSObjectProtocol & NewsFeedRoutingLogic & NewsFeedDataPassing)?
+    // MARK: - Parameters
     
-    private var feedViewModel = FeedViewModel.init(cells: [])
+    var interactor: NewsFeedBusinessLogic?
+    var router: (NSObjectProtocol & NewsFeedRoutingLogic)?
+    
+    private var feedViewModel = FeedViewModel.init(cells: [], footerTitle: nil)
     
     @IBOutlet weak var tableView: UITableView!
+    private var titleView = TitleView()
+    private lazy var footerView = FooterView()
+    private var refreshConrol: UIRefreshControl = {
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(refresh), for: .valueChanged)
+        return refreshControl
+    }()
     
     // MARK: Setup
     
@@ -32,7 +41,6 @@ class NewsFeedViewController: UIViewController, NewsFeedDisplayLogic, NewsFeedCo
         interactor.presenter = presenter
         presenter.viewController = viewController
         router.viewController = viewController
-        router.dataStore = interactor
     }
     
     // MARK: Routing
@@ -51,40 +59,71 @@ class NewsFeedViewController: UIViewController, NewsFeedDisplayLogic, NewsFeedCo
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()
-        tableView.register(UINib(nibName: "NewsFeedCell", bundle: nil), forCellReuseIdentifier: NewsFeedCell.reuseID)
+        setupNavigationBar()
+        
+        interactor?.makeRequest(request: .getNewsFeed)
+        interactor?.makeRequest(request: .getUser)
+        
+        setupTableView()
+    }
+    
+    // MARK: - Methods
+    
+    private func setupNavigationBar() {
+        self.navigationController?.hidesBarsOnSwipe = true
+        self.navigationController?.navigationBar.shadowImage = UIImage()
+        self.navigationItem.titleView = titleView
+    }
+    
+    @objc private func refresh() {
+        interactor?.makeRequest(request: .getNewsFeed)
+
+    }
+    
+    private func setupTableView() {
+        tableView.contentInset.top = 8
         tableView.register(NewsFeedCodeCell.self, forCellReuseIdentifier: NewsFeedCodeCell.reuseID)
-        interactor?.makeRequest(request: NewsFeed.Something.Request.RequestType.getNewsFeed)
         tableView.separatorStyle = .none
         tableView.backgroundColor = .clear
         tableView.isUserInteractionEnabled = true
-        view.backgroundColor = .blue
+        tableView.addSubview(refreshConrol)
+        tableView.tableFooterView = footerView
     }
-    
     
     func displaySomething(viewModel: NewsFeed.Something.ViewModel.ViewModelData) {
         switch viewModel {
         case .displayNewsFeed(feedViewModel: let feedViewModel):
             self.feedViewModel = feedViewModel
             tableView.reloadData()
+            refreshConrol.endRefreshing()
+            footerView.setTitle(feedViewModel.footerTitle)
+        case .displayUserInfo(userViewModel: let userViewModel):
+            titleView.set(userViewModel: userViewModel)
+        case .displayFooterLoader:
+            footerView.showLoader()
+        }
+    }
+    
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if scrollView.contentOffset.y > scrollView.contentSize.height / 1.1 {
+            interactor?.makeRequest(request: .getNextBatch)
         }
     }
     
     // MARK: - NewsFeedCodeCellDelegate
     
     func revealPost(for cell: NewsFeedCodeCell) {
-        print("121312")
         guard let indexPath = tableView.indexPath(for: cell) else { return }
         let cellViewModel = feedViewModel.cells[indexPath.row]
         interactor?.makeRequest(request: .revealPostIds(postId: cellViewModel.postId))
     }
 }
 
+// MARK: - UITableViewDelegate, UITableViewDataSource
+
 extension NewsFeedViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        // Запуск через .xib
-//        let cell = tableView.dequeueReusableCell(withIdentifier: NewsFeedCell.reuseID, for: indexPath) as! NewsFeedCell
-        // Запуск через код
         let cell = tableView.dequeueReusableCell(withIdentifier: NewsFeedCodeCell.reuseID, for: indexPath) as! NewsFeedCodeCell
         let cellViewModel = feedViewModel.cells[indexPath.row]
         cell.delegate = self

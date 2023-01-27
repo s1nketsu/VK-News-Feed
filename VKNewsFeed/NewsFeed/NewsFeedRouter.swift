@@ -12,15 +12,8 @@ import UIKit
   //func routeToSomewhere(segue: UIStoryboardSegue?)
 }
 
-protocol NewsFeedDataPassing
-{
-  var dataStore: NewsFeedDataStore? { get }
-}
-
-class NewsFeedRouter: NSObject, NewsFeedRoutingLogic, NewsFeedDataPassing
-{
+class NewsFeedRouter: NSObject, NewsFeedRoutingLogic {
   weak var viewController: NewsFeedViewController?
-  var dataStore: NewsFeedDataStore?
   
   // MARK: Routing
   

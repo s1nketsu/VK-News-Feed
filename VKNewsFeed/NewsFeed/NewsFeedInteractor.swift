@@ -11,40 +11,39 @@ protocol NewsFeedBusinessLogic {
     func makeRequest(request: NewsFeed.Something.Request.RequestType)
 }
 
-protocol NewsFeedDataStore {
-    //var name: String { get set }
-}
-
-class NewsFeedInteractor: NewsFeedBusinessLogic, NewsFeedDataStore {
+class NewsFeedInteractor: NewsFeedBusinessLogic {
+    
+    // MARK: - Parameters
     
     var presenter: NewsFeedPresentationLogic?
     var worker: NewsFeedWorker?
-    private var revealedPostIds = [Int]()
-    private var feedResponce: FeedResponce?
     
-    private var fetcher: DataFetcher = NetworkDataFetcher(networking: NetworkService())
-    
-    // MARK: Do something
-    
-    func makeRequest(request: NewsFeed.Something.Request.RequestType) {
-        worker = NewsFeedWorker()
-        worker?.doSomeWork()
-        
-        switch request {
-            
-        case .getNewsFeed:
-            fetcher.getFeed { [weak self] feedResponce in
-                self?.feedResponce = feedResponce
-                self?.presentFeed()
-            }
-        case .revealPostIds(postId: let postId):
-            revealedPostIds.append(postId)
-            presentFeed()
-        }
+    init() {
+        self.worker = NewsFeedWorker()
     }
     
-    private func presentFeed() {
-        guard let feedResponce = feedResponce else { return }
-        presenter?.presentSomething(response: .presentNewsFeed(feed: feedResponce, revealedPostIds: revealedPostIds))
+    // MARK: Make request method
+    
+    func makeRequest(request: NewsFeed.Something.Request.RequestType) {
+        
+        switch request {
+        case .getNewsFeed:
+            worker?.getFeed(completion: { [weak self] (revealedPostIds, feed) in
+                self?.presenter?.presentSomething(response: .presentNewsFeed(feed: feed, revealedPostIds: revealedPostIds))
+            })
+        case .getUser:
+            worker?.getUser(completion: { [weak self] (user) in
+                self?.presenter?.presentSomething(response: .presentUserInfo(user: user))
+            })
+        case .revealPostIds(let postId):
+            worker?.revealPostIds(forPostId: postId, completion: { [weak self] (revealedPostIds, feed) in
+                self?.presenter?.presentSomething(response: .presentNewsFeed(feed: feed, revealedPostIds: revealedPostIds))
+            })
+        case .getNextBatch:
+            presenter?.presentSomething(response: .presentFooterLoader)
+            worker?.getNextBatch(completion: { [weak self] (revealedPostIds, feedResponce) in
+                self?.presenter?.presentSomething(response: .presentNewsFeed(feed: feedResponce, revealedPostIds: revealedPostIds))
+            })
+        }
     }
 }

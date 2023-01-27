@@ -71,12 +71,6 @@ final class NewsFeedCellLayoutCalculator: NewsFeedCellLayoutCalculatorProtocol {
                                                      y: attachmentTop),
                                      size: CGSize.zero)
         
-//        if let attachment = photoAttachment {
-//            let ratio: CGFloat = CGFloat(Float(attachment.height) / Float(attachment.width))
-//            attachmentFrame.size = CGSize(width: cardViewWidth,
-//                                          height: cardViewWidth * ratio)
-//        }
-        
         if let attachment = photoAttachments.first {
             let ratio: CGFloat = CGFloat(Float(attachment.height) / Float(attachment.width))
             if photoAttachments.count == 1 {
